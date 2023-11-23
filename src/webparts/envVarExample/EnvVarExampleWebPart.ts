@@ -6,6 +6,7 @@ import {
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import type { IReadonlyTheme } from '@microsoft/sp-component-base';
 import { escape } from '@microsoft/sp-lodash-subset';
+import {ApplicationInsights} from '@microsoft/applicationinsights-web';
 
 import styles from './EnvVarExampleWebPart.module.scss';
 import * as strings from 'EnvVarExampleWebPartStrings';
@@ -18,7 +19,8 @@ export default class EnvVarExampleWebPart extends BaseClientSideWebPart<IEnvVarE
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
-  private _environmentalVariable: string = 'TODO: Replace with SPFX_ENVVAR environmental variable value';
+  private _environmentalVariable: string = 'TODO:'+spfxEnvvar;
+
 
   public render(): void {
     this.domElement.innerHTML = `
@@ -36,6 +38,10 @@ export default class EnvVarExampleWebPart extends BaseClientSideWebPart<IEnvVarE
   }
 
   protected onInit(): Promise<void> {
+    const appInsights = new ApplicationInsights({config:{
+      instrumentationKey: spfxEnvvar
+    }});
+    appInsights.trackPageView();
     return this._getEnvironmentMessage().then(message => {
       this._environmentMessage = message;
     });
